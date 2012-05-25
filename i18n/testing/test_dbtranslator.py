@@ -54,3 +54,12 @@ def test_caching(tmpdir, engine):
     assert tr.gettext('hello') == 'ciao'
     tr._lookup = None # it'd crash if caching does not work
     assert tr.gettext('hello') == 'ciao'
+
+
+def test_ngettext(tmpdir, engine):
+    tr = DBTranslator(tmpdir, ['it_IT'], engine=engine)
+    tr.add_translation('it_IT', 'apple', 'mela', 'mele')
+    assert tr.gettext('apple') == 'apple' # plurar translations only works with ngettext
+    assert tr.ngettext('apple', 'apples', 0) == 'mele'
+    assert tr.ngettext('apple', 'apples', 1) == 'mela'
+    assert tr.ngettext('apple', 'apples', 2) == 'mele'
