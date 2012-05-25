@@ -1,6 +1,6 @@
 import py
 import time
-from i18n import Translator
+from i18n.translator import Translator
 
 def add_translation(po, msgid, msgstr):
     src = str(py.code.Source("""
