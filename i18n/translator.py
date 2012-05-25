@@ -14,11 +14,14 @@ class Translator(object):
         self.pot = self.langdir.join('template.pot')
         if autocompile:
             self.compile()
-        self.reload()
+        self._init_tr()
 
-    def reload(self):
+    def _init_tr(self):
         self.tr = gettext.translation('messages', str(self.langdir),
                                       self.languages, fallback=True)
+
+    def reload(self):
+        self._init_tr()
 
     def gettext(self, msgid):
         return self.tr.ugettext(msgid)

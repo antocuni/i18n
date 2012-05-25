@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 #
-from i18n import Translator
+from i18n.translator import Translator
 
 def setup_model(engine):
 
@@ -45,12 +45,29 @@ class DBTranslator(Translator):
         self.engine = engine
         self.db = DBModel(engine)
         self.session = self.db.Session()
+        self._cache = {}
+
+    def reload(self):
+        Translator.reload(self)
+        self.clear_cache()
+
+    def clear_cache(self):
+        self._cache.clear()
 
     def add_translation(self, language, msgid, msgstr):
         x = self.db.Translation(language, msgid, msgstr)
         self.session.add(x)
+        self.clear_cache()
 
     def gettext(self, msgid):
+        try:
+            return self._cache[msgid]
+        except KeyError:
+            msgstr = self._lookup(msgid)
+            self._cache[msgid] = msgstr
+            return msgstr
+
+    def _lookup(self, msgid):
         assert len(self.languages) == 1 # fix me
         language = self.languages[0]
         q = self.session.query(self.db.Translation).filter_by(

@@ -32,7 +32,6 @@ def test_DBTranslator(tmpdir, engine):
     assert tr.gettext('hello') == 'ciao'
 
 def test_delegate_to_gettext(tmpdir, engine):
-    languages = ['it_IT']
     tmpdir.join('foo.py').write("print _('hello'), _('world')")
     tr = DBTranslator(tmpdir, ['it_IT'], engine=engine)
     tr.extract()
@@ -47,3 +46,11 @@ def test_delegate_to_gettext(tmpdir, engine):
     tr.add_translation('it_IT', 'hello', 'salve')
     assert tr.gettext('hello') == 'salve'
     assert tr.gettext('world') == 'mondo'
+
+
+def test_caching(tmpdir, engine):
+    tr = DBTranslator(tmpdir, ['it_IT'], engine=engine)
+    tr.add_translation('it_IT', 'hello', 'ciao')
+    assert tr.gettext('hello') == 'ciao'
+    tr._lookup = None # it'd crash if caching does not work
+    assert tr.gettext('hello') == 'ciao'
