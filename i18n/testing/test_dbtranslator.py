@@ -1,13 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm.session import Session
-from i18n.dbtranslator import DBModel
+from i18n.dbtranslator import DBModel, DBTranslator
 
 def pytest_funcarg__engine(request):
-    def setup():
-        engine = create_engine('sqlite:///:memory:', echo=True)
-        Base.metadata.create_all(engine)
-        return engine
-    return request.cached_setup(setup, scope='session')
+    return create_engine('sqlite:///:memory:', echo=True)
 
 
 def test_DBModel():
@@ -27,3 +23,10 @@ def test_DBModel():
     session2.add(y)
     session2.flush()
     assert session2.query(db2.Translation).all() == [y]
+
+
+def test_DBTranslator(tmpdir, engine):
+    tr = DBTranslator(tmpdir, ['it_IT'], engine=engine)
+    tr.add_translation('it_IT', 'hello', 'ciao')
+    assert tr.gettext('hello') == 'ciao'
+
