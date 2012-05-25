@@ -7,9 +7,12 @@ babel_cli = CommandLineInterface()
 
 class Translator(object):
 
-    def __init__(self, rootdir, languages, autocompile=True):
+    def __init__(self, rootdir, languages, dest_language=None, autocompile=True):
         self.rootdir = rootdir
         self.languages = languages
+        if dest_language is None:
+            dest_language = languages[0]
+        self.dest_language = dest_language
         self.langdir = rootdir.join('languages').ensure(dir=True)
         self.pot = self.langdir.join('template.pot')
         if autocompile:
@@ -18,7 +21,7 @@ class Translator(object):
 
     def _init_tr(self):
         self.tr = gettext.translation('messages', str(self.langdir),
-                                      self.languages, fallback=True)
+                                      [self.dest_language], fallback=True)
 
     def reload(self):
         self._init_tr()

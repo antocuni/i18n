@@ -40,10 +40,11 @@ class DBModel(object):
 
 class DBTranslator(Translator):
 
-    def __init__(self, rootdir, languages, autocompile=True, engine=None):
+    def __init__(self, rootdir, languages, dest_language=None, autocompile=True,
+                 engine=None):
         if engine is None:
             raise TypeError('the engine parameter is non-optional')
-        Translator.__init__(self, rootdir, languages, autocompile)
+        Translator.__init__(self, rootdir, languages, dest_language, autocompile)
         self.engine = engine
         self.db = DBModel(engine)
         self.session = self.db.Session()
@@ -94,10 +95,9 @@ class DBTranslator(Translator):
         return self._cached(get, msgid, msgid_plural, is_plural)
 
     def _lookup_entry(self, msgid, msgid_plural=None):
-        assert len(self.languages) == 1 # fix me
-        language = self.languages[0]
         Entry = self.db.TranslationEntry
-        q = self.session.query(Entry).filter_by(language = language, msgid = msgid)
+        q = self.session.query(Entry).filter_by(language = self.dest_language,
+                                                msgid = msgid)
         if msgid_plural is None:
             q = q.filter(Entry.msgstr_plural == None)
         else:
