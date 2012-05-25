@@ -19,8 +19,15 @@ class Translator(object):
     def reload(self):
         self.tr = gettext.translation('messages', str(self.langdir),
                                       self.languages, fallback=True)
-        self._ = self.tr.ugettext
-        self.ngettext = self.tr.ungettext
+
+    def gettext(self, msgid):
+        return self.tr.ugettext(msgid)
+
+    def _(self, msgid):
+        return self.gettext(msgid)
+
+    def ngettext(self, msgid1, msgid2, n):
+        return self.tr.ungettext(msgid1, msgid2, n)
 
     def _run(self, cmd, *args):
         babel_cli.run(['pybabel', cmd] + list(args))
