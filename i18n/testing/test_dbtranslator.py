@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm.session import Session
 from i18n.dbtranslator import DBModel, DBTranslator
+from i18n.testing.test_translator import add_translation
 
 def pytest_funcarg__engine(request):
     return create_engine('sqlite:///:memory:', echo=True)
@@ -30,3 +31,19 @@ def test_DBTranslator(tmpdir, engine):
     tr.add_translation('it_IT', 'hello', 'ciao')
     assert tr.gettext('hello') == 'ciao'
 
+def test_delegate_to_gettext(tmpdir, engine):
+    languages = ['it_IT']
+    tmpdir.join('foo.py').write("print _('hello'), _('world')")
+    tr = DBTranslator(tmpdir, ['it_IT'], engine=engine)
+    tr.extract()
+    it_IT = tr.get_po('it_IT')
+    add_translation(it_IT, 'hello', 'ciao')
+    add_translation(it_IT, 'world', 'mondo')
+    tr.compile()
+    tr.reload()
+    assert tr.gettext('hello') == 'ciao'
+    assert tr.gettext('world') == 'mondo'
+    #
+    tr.add_translation('it_IT', 'hello', 'salve')
+    assert tr.gettext('hello') == 'salve'
+    assert tr.gettext('world') == 'mondo'

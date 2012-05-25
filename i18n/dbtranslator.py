@@ -11,9 +11,8 @@ def setup_model(engine):
 
     class Translation(Base):
         __tablename__ = 'translations'
-        id = Column(Integer, primary_key=True)
-        language = Column(String) # destination language, e.g. it_IT
-        msgid = Column(String)
+        language = Column(String, primary_key=True) # destination language, e.g. it_IT
+        msgid = Column(String, primary_key=True)
         msgstr = Column(String)
 
         def __init__(self, language, msgid, msgstr):
@@ -58,8 +57,9 @@ class DBTranslator(Translator):
             language = language, msgid = msgid)
         rows = q.all()
         if len(rows) == 0:
-            XXX
+            return Translator.gettext(self, msgid)
         elif len(rows) == 1:
             return rows[0].msgstr
         else:
+            # cannot happen because (language, msgid) is the primary key
             assert False, "Multiple translations of %s found: %s" % (msgid, rows)
