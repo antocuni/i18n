@@ -61,27 +61,37 @@ class DBTranslator(Translator):
         self.session.add(x)
         self.clear_cache()
 
-    def gettext(self, msgid):
+    def _cached(self, fn, *args):
         try:
-            return self._cache[msgid]
+            return self._cache[args]
         except KeyError:
+            res = fn(*args)
+            self._cache[args] = res
+            return res
+
+    def gettext(self, msgid):
+        def get(msgid):
             entry = self._lookup_entry(msgid)
             if entry is not None:
-                msgstr = entry.msgstr
-            else:
-                msgstr = Translator.gettext(self, msgid)
-            self._cache[msgid] = msgstr
-            return msgstr
-
-    def ngettext(self, msgid, msgid_plural, n):
-        entry = self._lookup_entry(msgid, msgid_plural)
-        if entry is not None:
-            if n == 1:
                 return entry.msgstr
             else:
-                return entry.msgstr_plural
-        else:
-            return Translator.ngettext(self, msgid, msgid_plural, n)
+                return Translator.gettext(self, msgid)
+        #
+        return self._cached(get, msgid)
+
+    def ngettext(self, msgid, msgid_plural, n):
+        def get(msgid, msgid_plural, is_plural):
+            entry = self._lookup_entry(msgid, msgid_plural)
+            if entry is not None:
+                if is_plural:
+                    return entry.msgstr_plural
+                else:
+                    return entry.msgstr
+            else:
+                return Translator.ngettext(self, msgid, msgid_plural, n)
+        #
+        is_plural = (n != 1)
+        return self._cached(get, msgid, msgid_plural, is_plural)
 
     def _lookup_entry(self, msgid, msgid_plural=None):
         assert len(self.languages) == 1 # fix me

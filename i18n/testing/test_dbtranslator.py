@@ -14,16 +14,16 @@ def test_DBModel():
     db2 = DBModel(engine2)
     #
     session1 = db1.Session()
-    x = db1.Translation('it_IT', 'hello', 'ciao')
+    x = db1.TranslationEntry('it_IT', 'hello', 'ciao')
     session1.add(x)
     session1.flush()
-    assert session1.query(db1.Translation).all() == [x]
+    assert session1.query(db1.TranslationEntry).all() == [x]
     #
     session2 = db2.Session()
-    y = db2.Translation('it_IT', 'world', 'mondo')
+    y = db2.TranslationEntry('it_IT', 'world', 'mondo')
     session2.add(y)
     session2.flush()
-    assert session2.query(db2.Translation).all() == [y]
+    assert session2.query(db2.TranslationEntry).all() == [y]
 
 
 def test_DBTranslator(tmpdir, engine):
@@ -52,7 +52,7 @@ def test_caching(tmpdir, engine):
     tr = DBTranslator(tmpdir, ['it_IT'], engine=engine)
     tr.add_translation('it_IT', 'hello', 'ciao')
     assert tr.gettext('hello') == 'ciao'
-    tr._lookup = None # it'd crash if caching does not work
+    tr._lookup_entry = None # it'd crash if caching does not work
     assert tr.gettext('hello') == 'ciao'
 
 
@@ -62,4 +62,5 @@ def test_ngettext(tmpdir, engine):
     assert tr.gettext('apple') == 'apple' # plurar translations only works with ngettext
     assert tr.ngettext('apple', 'apples', 0) == 'mele'
     assert tr.ngettext('apple', 'apples', 1) == 'mela'
+    tr._lookup_entry = None # check caching
     assert tr.ngettext('apple', 'apples', 2) == 'mele'
