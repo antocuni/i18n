@@ -59,8 +59,18 @@ def test_caching(tmpdir, engine):
 def test_ngettext(tmpdir, engine):
     tr = DBTranslator(tmpdir, ['it_IT'], engine=engine)
     tr.add_translation('it_IT', 'apple', 'mela', 'mele')
-    assert tr.gettext('apple') == 'apple' # plurar translations only works with ngettext
     assert tr.ngettext('apple', 'apples', 0) == 'mele'
     assert tr.ngettext('apple', 'apples', 1) == 'mela'
     tr._lookup_entry = None # check caching
     assert tr.ngettext('apple', 'apples', 2) == 'mele'
+
+
+def test_singular_vs_plural(tmpdir, engine):
+    tr = DBTranslator(tmpdir, ['it_IT'], engine=engine)
+    tr.add_translation('it_IT', 'hello', 'ciao')
+    tr.add_translation('it_IT', 'apple', 'mela', 'mele')
+    #
+    # singular entries work only with gettext
+    # plural entries work only with ngettext
+    assert tr.gettext('apple') == 'apple'
+    assert tr.ngettext('hello', 'hellos :-)', 1) == 'hello'
