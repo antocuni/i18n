@@ -8,12 +8,12 @@ babel_cli = CommandLineInterface()
 class Translator(object):
 
     def __init__(self, rootdir, languages, dest_language=None, autocompile=True):
-        self.rootdir = rootdir
+        self.rootdir = py.path.local(rootdir)
         self.languages = languages
         if dest_language is None:
             dest_language = languages[0]
         self.dest_language = dest_language
-        self.langdir = rootdir.join('languages').ensure(dir=True)
+        self.langdir = self.rootdir.join('languages').ensure(dir=True)
         self.pot = self.langdir.join('template.pot')
         if autocompile:
             self.compile()

@@ -78,3 +78,10 @@ def test_translate_string(tmpdir):
     tr.compile()
     tr.reload()
     assert tr._('hello') == 'ciao'
+
+
+def test_pass_string_to_init(tmpdir):
+    path = str(tmpdir)
+    tr = Translator(path, ['it_IT'])
+    assert tr.rootdir.strpath == path
+    
