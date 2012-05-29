@@ -60,6 +60,7 @@ class DBTranslator(Translator):
     def add_translation(self, language, msgid, msgstr, msgstr_plural=None):
         x = self.db.TranslationEntry(language, msgid, msgstr, msgstr_plural)
         self.session.add(x)
+        self.session.commit()
         self.clear_cache()
 
     def _cached(self, fn, *args):
