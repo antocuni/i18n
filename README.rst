@@ -108,3 +108,16 @@ method to insert a new translation in the DB::
 
     tr.add_translation("it_IT", "hello world", "ciao mondo")
     print tr._("hello world") # prints "ciao mondo"
+
+
+How to use a global Translator
+==============================
+
+By design, ``i18n`` tries to completely avoid any global state. This means
+that you can instantiate as many ``Translator`` and ``DBTranslator`` as you
+want, each one referring to a different directory and/or database.  This is
+especially useful for testing.
+
+However, in practice most projects want to use a global translator which knows
+about the messages of all the components in the project.  The demo application
+shows a way to do it in the ``translate.py`` module::
