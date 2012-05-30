@@ -4,7 +4,10 @@ i18n - Translations made easy
 
 This package tries to simplify the workflow and development of
 internationalized applications. It is a thin wrapper around existing tools, in
-particular gettext_ and pybabel_.
+particular gettext_ and babel_.
+
+.. _gettext: http://docs.python.org/library/gettext.html
+.. _babel: http://babel.edgewall.org/
 
 
 Basic usage
@@ -48,6 +51,9 @@ existing tools, for example `QT Linguist`_ or Poedit_.  For the correct
 functioning of the application, the entire ``languages/`` hierarchy needs to
 be preserved. We suggest to track the various ``messages.po`` files in Version
 Control System together with the other files belonging to the application.
+
+.. _`QT Linguist`: http://qt.nokia.com/products/developer-tools?currentflipperobject=cf2f1a5149cecc583f8f2733206343ca#qt-tools-at-a
+.. _Poedit: http://www.poedit.net/
 
 
 Updating messages
@@ -108,6 +114,8 @@ method to insert a new translation in the DB::
     print tr._("hello world") # prints "ciao mondo"
 
 
+.. _sqlalchemy: http://www.sqlalchemy.org/
+
 How to use a global Translator
 ==============================
 
@@ -144,3 +152,10 @@ and ``compile`` from the command line without having to manually specify the
 root dir and the supported languages. Just run::
 
     $ python translate.py extract     # ...or compile
+
+Acknowledgments
+================
+
+The development of this package has been generously funded by `S3 s.r.l.`_.
+
+.. _`S3 s.r.l.`: http://s3srl.com/
