@@ -13,7 +13,7 @@ setup(
     packages=['i18n'],
     url='http://bitbucket.org/antocuni/i18n',
     license='BSD',
-    description='Package to simplify the development of internationalized applications',
+    description='Simplify the development of internationalized applications',
     long_description=long_description,
     keywords='i18n gettext pybabel translation',
     classifiers=[
@@ -24,6 +24,5 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Internationalization",
         ],
-    install_requires=['py'], # and also PyQT, but it doesn't work with
-                             # setuptools :-(
+    install_requires=['py', 'babel']
 )
