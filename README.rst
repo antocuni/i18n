@@ -28,15 +28,10 @@ Extracting messages
 ===================
 
 Before doing the actual translation, you need to **extract** the messages from
-your source files. The ``Translator`` object has a method called ``extract()``
-which is a wrapper around ``pybabel extract`` and ``pybabel update``.
+your source files, by invoking the ``extract`` command on the ``i18n`` module,
+which is a wrapper around ``pybabel extract`` and ``pybabel update``::
 
-::
-
-    >>> from i18n.translator import Translator
-    >>> supported_languages = ['it_IT', 'fr_FR', 'de_DE']
-    >>> tr = Translator('/path/to/root', supported_languages, 'it_IT')
-    >>> tr.extract()
+    $ python -m i18n --root=/path/to/root --languages=it_IT,fr_FR,de_DE extract
 
 ``extract`` looks for all the messages wrapped inside calls to ``_()``,
 ``gettext()`` or ``ngettext()`` and produces a file called
@@ -59,7 +54,7 @@ Updating messages
 =================
 
 During the development of the application, you will surely add new messages to
-be translated. The ``extract()`` method automatically handle this case: if it
+be translated. The ``extract`` command automatically handle this case: if it
 finds existing catalog files, their content (including the existing
 translations) is merged with the newly extracted messages.
 
@@ -75,8 +70,11 @@ This means that in most cases you do not have to worry about the compilation
 of the catalogs.
 
 If you prefer to have more control on this step, you can pass
-``autocompile=False`` to the constructor of ``Translator``. Then, you can
-compile the catalogs manually by calling the ``compile()`` method.
+``autocompile=False`` to the constructor of ``Translator`` and compile them
+manually from the command line::
+
+    $ python -m i18n --root=/path/to/root --languages=it_IT,fr_FR,de_DE compile
+
 
 
 Storing translations in a database
@@ -121,3 +119,28 @@ especially useful for testing.
 However, in practice most projects want to use a global translator which knows
 about the messages of all the components in the project.  The demo application
 shows a way to do it in the ``translate.py`` module::
+
+    import py
+    from i18n.translator import Translator
+
+    # set the root of the project to the directory containing this file
+    ROOT = py.path.local(__file__).dirpath()
+    LANGUAGES = ['it_IT', 'fr_FR', 'de_DE']
+
+    tr = Translator(ROOT, LANGUAGES, 'it_IT')
+    _ = tr._
+    ngettext = tr.ngettext
+
+    if __name__ == '__main__':
+        tr.cmdline(sys.argv)
+
+This way, the rest of the application can simply import and use ``_()`` and
+``ngettext()`` from ``translate.py``. Or, at your preference, import directly
+the ``tr`` object and use ``tr._()`` and ``tr.ngettext()`` to translate
+messages.
+
+The last two lines of the code enables a convenient way to call ``extract``
+and ``compile`` from the command line without having to manually specify the
+root dir and the supported languages. Just run::
+
+    $ python translate.py extract     # ...or compile
