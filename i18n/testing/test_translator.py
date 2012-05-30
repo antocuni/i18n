@@ -42,6 +42,20 @@ def test_extract_and_update(tmpdir):
     assert 'world' in it_IT_text
     assert 'ciao' in it_IT_text
 
+def test_extract_from_method_calls(tmpdir):
+    tmpdir.join('foo.py').write("""
+print tr._('hello')
+print tr.gettext('world')
+print tr.ngettext('orange', 'oranges', 1)
+""")
+    tr = Translator(tmpdir, ['it_IT'], autocompile=False)
+    tr.extract()
+    pot = tmpdir.join('languages', 'template.pot').read()
+    assert 'hello' in pot
+    assert 'world' in pot
+    assert 'orange' in pot
+
+
 def test_compile(tmpdir):
     class MyTranslator(Translator):
         compile_count = 0
