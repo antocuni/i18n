@@ -72,3 +72,17 @@ class Translator(object):
             self.langdir.join(lang, 'LC_MESSAGES').ensure(dir=1)
             print 'compiling language %s' % po.basename
             self._do_compile(po, lang)
+
+    def cmdline(self, argv):
+        import argparse
+        from i18n.cmdline import add_subparsers
+        parser = argparse.ArgumentParser(
+            description='Manage the translations of a project.')
+        add_subparsers(parser)
+        args = parser.parse_args(argv[1:])
+        if args.command == 'extract':
+            self.extract()
+        elif args.command == 'compile':
+            self.compile()
+        else:
+            parser.error('Invalid command: %s' % args.command)

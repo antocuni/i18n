@@ -99,3 +99,23 @@ def test_pass_string_to_init(tmpdir):
     tr = Translator(path, ['it_IT'])
     assert tr.rootdir.strpath == path
     
+
+def test_cmdline():
+    class MyTranslator(Translator):
+        def __init__(self):
+            pass
+
+        def compile(self):
+            self.cmd = 'compile'
+
+        def extract(self):
+            self.cmd = 'extract'
+
+    tr = MyTranslator()
+    tr.cmdline(['foo.py', 'compile'])
+    assert tr.cmd == 'compile'
+    tr.cmdline(['foo.py', 'extract'])
+    assert tr.cmd == 'extract'
+    py.test.raises(SystemExit, "tr.cmdline(['foo.py', 'foobar'])")
+    
+    
