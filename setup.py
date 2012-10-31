@@ -2,12 +2,12 @@ import sys
 import os.path
 from setuptools import setup, find_packages
 
-readme = os.path.join(os.path.dirname(__file__), 'README.rst')
+readme = os.path.join(os.path.dirname(__file__), 'README')
 long_description = open(readme).read()
 
 setup(
     name='i18n',
-    version='0.1',
+    version='0.2',
     author='Antonio Cuni',
     author_email='anto.cuni@gmail.com',
     packages=['i18n'],
